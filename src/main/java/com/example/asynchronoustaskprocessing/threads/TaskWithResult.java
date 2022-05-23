@@ -1,5 +1,6 @@
-package com.example.asynchronoustaskprocessing.models;
+package com.example.asynchronoustaskprocessing.threads;
 
+import com.example.asynchronoustaskprocessing.dtos.TaskWithoutResult;
 import com.example.asynchronoustaskprocessing.enums.TaskStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,17 +9,14 @@ import lombok.ToString;
 
 import java.util.Random;
 
-@Getter
-@Setter
 @NoArgsConstructor
 @ToString
-public class Task implements Runnable {
-    private Integer id;
-    private TaskStatus status;
-    private String progress;
-    private Double result;
+public class TaskWithResult extends TaskWithoutResult implements Runnable {
+    @Getter
+    @Setter
+    private double result;
 
-    public Task(Double result) {
+    public TaskWithResult(double result) {
         this.result = result;
         this.status = TaskStatus.RUNNING;
         this.progress = "0%";

@@ -1,6 +1,7 @@
 package com.example.asynchronoustaskprocessing.controllers;
 
 import com.example.asynchronoustaskprocessing.dtos.CreatedTask;
+import com.example.asynchronoustaskprocessing.dtos.TaskWithoutResult;
 import com.example.asynchronoustaskprocessing.dtos.TaskArguments;
 import com.example.asynchronoustaskprocessing.services.TaskService;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +21,12 @@ public class TaskController {
     }
 
     @GetMapping("/{taskId}")
-    public Object checkStatusAndResultOfTask(@PathVariable Integer taskId) {
+    public TaskWithoutResult checkStatusAndResultOfTask(@PathVariable Integer taskId) {
         return taskService.getTask(taskId);
     }
 
     @GetMapping()
-    public List<Object> checkStatusAndResultOfTask() {
+    public List<TaskWithoutResult> checkStatusAndResultOfAllTasks() {
         return taskService.getTasks();
     }
-
 }

@@ -8,9 +8,8 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 @AllArgsConstructor
-public class RunningTask {
-    private Integer id;
-    private TaskStatus status;
-    private String progress;
-
+public class TaskWithoutResult {
+    protected int id;
+    protected TaskStatus status;
+    protected String progress;
 }
