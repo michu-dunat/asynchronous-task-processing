@@ -16,45 +16,62 @@ public class TaskService {
     private final ArrayList<TaskWithResult> tasks = new ArrayList<>();
 
     public CreatedTask createTask(TaskArguments taskArguments) {
-        int taskId;
-
         double result = Math.pow(taskArguments.base, taskArguments.exponent);
-        TaskWithResult task = new TaskWithResult(result);
+        TaskWithResult task = createTaskAndAddItToTaskList(result);
+        startTaskThread(task);
+        return new CreatedTask(task.getId());
+    }
 
+    private TaskWithResult createTaskAndAddItToTaskList(double powerResult) {
+        TaskWithResult task = new TaskWithResult(powerResult);
         synchronized (tasks) {
-            taskId = tasks.size() + 1;
-            task.setId(taskId);
+            task.setId( tasks.size() + 1);
             tasks.add(task);
         }
+        return task;
+    }
+
+    private void startTaskThread(TaskWithResult task) {
         Thread thread = new Thread(task);
         thread.start();
-
-        return new CreatedTask(taskId);
     }
 
     public TaskWithoutResult getTask(Integer taskId) {
         synchronized (tasks) {
             TaskWithResult task = tasks.get(taskId - 1);
-            if(task.getStatus().equals(TaskStatus.RUNNING)) {
-                return new TaskWithoutResult(task.getId(), task.getStatus(), task.getProgress());
-            } else {
-                return task;
-            }
+            return (getTaskWithRemovedResultIfNeeded(task));
+        }
+    }
+
+    private TaskWithoutResult getTaskWithRemovedResultIfNeeded(TaskWithResult task) {
+        if(task.getStatus().equals(TaskStatus.RUNNING)) {
+            return new TaskWithoutResult(task.getId(), task.getStatus(), task.getProgress());
+        } else {
+            return task;
         }
     }
 
     public ArrayList<TaskWithoutResult> getTasks() {
-        ArrayList<TaskWithoutResult> tasksToBeSent = new ArrayList<>();
+        ArrayList<TaskWithoutResult> tasksToBeSent;
         synchronized (tasks) {
-            for (TaskWithResult task : tasks) {
-                if(task.getStatus().equals(TaskStatus.RUNNING)) {
-                    tasksToBeSent.add(new TaskWithoutResult(task.getId(), task.getStatus(), task.getProgress()));
-                } else {
-                    tasksToBeSent.add(task);
-                }
-            }
+            tasksToBeSent = getAllTasksWithRemovedResultIfNeeded();
         }
         return tasksToBeSent;
     }
 
+    private ArrayList<TaskWithoutResult> getAllTasksWithRemovedResultIfNeeded() {
+        ArrayList<TaskWithoutResult> tasksToBeSent = new ArrayList<>();
+        for (TaskWithResult task : tasks) {
+            fillTaskList(tasksToBeSent, task);
+        }
+        return tasksToBeSent;
+    }
+
+    private void fillTaskList(ArrayList<TaskWithoutResult> tasksToBeSent, TaskWithResult task) {
+        if(task.getStatus().equals(TaskStatus.RUNNING)) {
+            tasksToBeSent.add(new TaskWithoutResult(task.getId(), task.getStatus(), task.getProgress()));
+        } else {
+            tasksToBeSent.add(task);
+        }
+    }
 }

@@ -21,12 +21,12 @@ public class TaskController {
     }
 
     @GetMapping("/{taskId}")
-    public TaskWithoutResult checkStatusAndResultOfTask(@PathVariable Integer taskId) {
+    public TaskWithoutResult readStatusAndResultOfTask(@PathVariable Integer taskId) {
         return taskService.getTask(taskId);
     }
 
     @GetMapping()
-    public List<TaskWithoutResult> checkStatusAndResultOfAllTasks() {
+    public List<TaskWithoutResult> readStatusAndResultOfAllTasks() {
         return taskService.getTasks();
     }
 }

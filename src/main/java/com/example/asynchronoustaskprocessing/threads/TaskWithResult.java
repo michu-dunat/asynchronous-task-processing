@@ -3,14 +3,10 @@ package com.example.asynchronoustaskprocessing.threads;
 import com.example.asynchronoustaskprocessing.dtos.TaskWithoutResult;
 import com.example.asynchronoustaskprocessing.enums.TaskStatus;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.util.Random;
 
-@NoArgsConstructor
-@ToString
 public class TaskWithResult extends TaskWithoutResult implements Runnable {
     @Getter
     @Setter
@@ -41,6 +37,10 @@ public class TaskWithResult extends TaskWithoutResult implements Runnable {
                 e.printStackTrace();
             }
         }
+        setStatusAndProgressToCompletionState();
+    }
+
+    private void setStatusAndProgressToCompletionState() {
         status = TaskStatus.FINISHED;
         progress = "100%";
     }

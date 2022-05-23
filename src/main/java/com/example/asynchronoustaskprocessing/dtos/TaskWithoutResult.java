@@ -6,7 +6,6 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
 @AllArgsConstructor
 public class TaskWithoutResult {
     protected int id;
