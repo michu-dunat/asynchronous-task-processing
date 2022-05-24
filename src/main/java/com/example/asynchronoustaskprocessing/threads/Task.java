@@ -1,18 +1,20 @@
 package com.example.asynchronoustaskprocessing.threads;
 
-import com.example.asynchronoustaskprocessing.dtos.TaskWithoutResult;
 import com.example.asynchronoustaskprocessing.enums.TaskStatus;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Random;
 
-public class TaskWithResult extends TaskWithoutResult implements Runnable {
-    @Getter
-    @Setter
+@Getter
+@Setter
+public class Task implements Runnable {
+    private int id;
     private Double result;
+    private TaskStatus status;
+    private String progress;
 
-    public TaskWithResult(double result) {
+    public Task(double result) {
         this.result = result;
         this.status = TaskStatus.RUNNING;
         this.progress = "0%";

@@ -1,10 +1,11 @@
 package com.example.asynchronoustaskprocessing.services;
 
 import com.example.asynchronoustaskprocessing.dtos.CreatedTask;
+import com.example.asynchronoustaskprocessing.dtos.TaskWithResult;
 import com.example.asynchronoustaskprocessing.dtos.TaskWithoutResult;
 import com.example.asynchronoustaskprocessing.dtos.TaskArguments;
 import com.example.asynchronoustaskprocessing.enums.TaskStatus;
-import com.example.asynchronoustaskprocessing.threads.TaskWithResult;
+import com.example.asynchronoustaskprocessing.threads.Task;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,17 +14,17 @@ import java.util.ArrayList;
 @Service
 @RequiredArgsConstructor
 public class TaskService {
-    private final ArrayList<TaskWithResult> tasks = new ArrayList<>();
+    private final ArrayList<Task> tasks = new ArrayList<>();
 
     public CreatedTask createTask(TaskArguments taskArguments) {
         double result = Math.pow(taskArguments.base, taskArguments.exponent);
-        TaskWithResult task = createTaskAndAddItToTaskList(result);
+        Task task = createTaskAndAddItToTaskList(result);
         startTaskThread(task);
         return new CreatedTask(task.getId());
     }
 
-    private TaskWithResult createTaskAndAddItToTaskList(double powerResult) {
-        TaskWithResult task = new TaskWithResult(powerResult);
+    private Task createTaskAndAddItToTaskList(double powerResult) {
+        Task task = new Task(powerResult);
         synchronized (tasks) {
             task.setId( tasks.size() + 1);
             tasks.add(task);
@@ -31,23 +32,23 @@ public class TaskService {
         return task;
     }
 
-    private void startTaskThread(TaskWithResult task) {
+    private void startTaskThread(Task task) {
         Thread thread = new Thread(task);
         thread.start();
     }
 
     public TaskWithoutResult getTask(Integer taskId) {
         synchronized (tasks) {
-            TaskWithResult task = tasks.get(taskId - 1);
+            Task task = tasks.get(taskId - 1);
             return (getTaskWithRemovedResultIfNeeded(task));
         }
     }
 
-    private TaskWithoutResult getTaskWithRemovedResultIfNeeded(TaskWithResult task) {
+    private TaskWithoutResult getTaskWithRemovedResultIfNeeded(Task task) {
         if(task.getStatus().equals(TaskStatus.RUNNING)) {
-            return new TaskWithoutResult(task.getId(), task.getStatus(), task.getProgress());
+            return new TaskWithoutResult(task.getId(), task.getStatus().getValue(), task.getProgress());
         } else {
-            return task;
+            return new TaskWithResult(task.getId(), task.getStatus().getValue(), task.getProgress(), task.getResult());
         }
     }
 
@@ -61,17 +62,18 @@ public class TaskService {
 
     private ArrayList<TaskWithoutResult> getAllTasksWithRemovedResultIfNeeded() {
         ArrayList<TaskWithoutResult> tasksToBeSent = new ArrayList<>();
-        for (TaskWithResult task : tasks) {
+        for (Task task : tasks) {
             fillTaskList(tasksToBeSent, task);
         }
         return tasksToBeSent;
     }
 
-    private void fillTaskList(ArrayList<TaskWithoutResult> tasksToBeSent, TaskWithResult task) {
+    private void fillTaskList(ArrayList<TaskWithoutResult> tasksToBeSent, Task task) {
         if(task.getStatus().equals(TaskStatus.RUNNING)) {
-            tasksToBeSent.add(new TaskWithoutResult(task.getId(), task.getStatus(), task.getProgress()));
+            tasksToBeSent.add(new TaskWithoutResult(task.getId(), task.getStatus().getValue(), task.getProgress()));
         } else {
-            tasksToBeSent.add(task);
+            tasksToBeSent.add(new TaskWithResult(task.getId(), task.getStatus().getValue(), task.getProgress(),
+                    task.getResult()));
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.example.asynchronoustaskprocessing.dtos;
 
-import com.example.asynchronoustaskprocessing.enums.TaskStatus;
 import lombok.*;
 
 @Getter
@@ -9,6 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 public class TaskWithoutResult {
     protected int id;
-    protected TaskStatus status;
+    protected String status;
     protected String progress;
 }
