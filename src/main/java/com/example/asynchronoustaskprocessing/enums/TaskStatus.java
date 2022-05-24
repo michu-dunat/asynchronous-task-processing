@@ -5,7 +5,8 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public enum TaskStatus {
     FINISHED("finished"),
-    RUNNING("running");
+    RUNNING("running"),
+    ERROR("error");
 
     private final String value;
 }

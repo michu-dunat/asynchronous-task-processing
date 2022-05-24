@@ -10,7 +10,7 @@ import java.util.Random;
 public class TaskWithResult extends TaskWithoutResult implements Runnable {
     @Getter
     @Setter
-    private double result;
+    private Double result;
 
     public TaskWithResult(double result) {
         this.result = result;
@@ -20,8 +20,7 @@ public class TaskWithResult extends TaskWithoutResult implements Runnable {
 
     @Override
     public void run() {
-        Random random = new Random();
-        int taskMaxTime = random.nextInt(35000 - 25000) + 25000;
+        int taskMaxTime = getRandomTaskDuration(35000, 25000);
         int taskTimeLeft = taskMaxTime;
         int interval = taskMaxTime / 100;
 
@@ -29,15 +28,31 @@ public class TaskWithResult extends TaskWithoutResult implements Runnable {
             try {
                 Thread.sleep(interval);
                 taskTimeLeft -= interval;
-                float percentage =  ((float) taskTimeLeft / (float) taskMaxTime) * 100;
-                if(percentage > 0) {
-                    progress = (100 - Math.floor(percentage)) + "%";
-                }
+                calculateAndUpdateProgress((float) taskTimeLeft, (float) taskMaxTime);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                setTaskFieldsToErrorValues();
             }
         }
+
         setStatusAndProgressToCompletionState();
+    }
+
+    private void setTaskFieldsToErrorValues() {
+        progress = "-1";
+        status = TaskStatus.ERROR;
+        result = null;
+    }
+
+    private void calculateAndUpdateProgress(float taskTimeLeft, float taskMaxTime) {
+        float percentage =  (taskTimeLeft / taskMaxTime) * 100;
+        if(percentage > 0) {
+            progress = (100 - Math.floor(percentage)) + "%";
+        }
+    }
+
+    private int getRandomTaskDuration(int upperBoundInMilliSeconds, int lowerBoundInMilliSeconds) {
+        Random random = new Random();
+        return random.nextInt(upperBoundInMilliSeconds - lowerBoundInMilliSeconds) + lowerBoundInMilliSeconds;
     }
 
     private void setStatusAndProgressToCompletionState() {
