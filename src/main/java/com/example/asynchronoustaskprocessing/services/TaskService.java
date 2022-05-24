@@ -39,6 +39,7 @@ public class TaskService {
 
     public TaskWithoutResult getTask(Integer taskId) {
         synchronized (tasks) {
+            if(tasks.isEmpty()) return null;
             Task task = tasks.get(taskId - 1);
             return (getTaskWithRemovedResultIfNeeded(task));
         }
@@ -55,6 +56,8 @@ public class TaskService {
     public ArrayList<TaskWithoutResult> getTasks() {
         ArrayList<TaskWithoutResult> tasksToBeSent;
         synchronized (tasks) {
+            if(tasks.isEmpty()) return new ArrayList<>();
+
             tasksToBeSent = getAllTasksWithRemovedResultIfNeeded();
         }
         return tasksToBeSent;
